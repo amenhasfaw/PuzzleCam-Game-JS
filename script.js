@@ -78,7 +78,7 @@ const getPressedPiece = (loc) => {
     for(let i=PIECES.length-1;i>=0;i--){
         console.log(loc.x - 180,loc.y)
         if(loc.x - 280 >PIECES[i].x && loc.x - 280<PIECES[i].x+PIECES[i].width &&
-            loc.y - 40 >PIECES[i].y && loc.y - 40 <PIECES[i].y+PIECES[i].height){
+            loc.y - 80 >PIECES[i].y && loc.y - 80 <PIECES[i].y+PIECES[i].height){
                 return PIECES[i]
             }
     }
