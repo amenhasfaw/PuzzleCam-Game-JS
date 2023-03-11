@@ -5,6 +5,7 @@ const ctx = canvas.getContext('2d')
 let SIZE = {x:180,y:60,width:640,height:480,row:5,column:5}
 const CANVAS = {width:1000,height:600}
 let PIECES = []
+let SELECTED_PIECE = null
 
 
 const main = () => {
@@ -17,7 +18,6 @@ const main = () => {
         VIDEO.onloadedmetadata = (e) => {
                 initializePieces(SIZE.row,SIZE.column)
                 updateCanvas()  
-                // randomizePieces()
 
          };
         
@@ -35,10 +35,63 @@ const main = () => {
 }
 
 
+const addEventListeners = () => {
+    canvas.addEventListener('mousedown', onMouseDown)
+    canvas.addEventListener('mousemove', onMouseMove)
+    canvas.addEventListener('mouseup', onMouseUp)
+}
+
+
+
+const onMouseDown = (e) => {
+    SELECTED_PIECE = getPressedPiece(e)
+    if(SELECTED_PIECE!=null){
+        const index =PIECES.indexOf(SELECTED_PIECE)
+        if(index>-1){
+            PIECES.splice(index,1)
+            PIECES.push(SELECTED_PIECE)
+        }
+        SELECTED_PIECE.offset={
+            x:e.x-SELECTED_PIECE.x,
+            y:e.y-SELECTED_PIECE.y
+        }
+    }
+}
+
+const onMouseMove = (e) => {
+    if(SELECTED_PIECE!=null){
+        SELECTED_PIECE.x=e.x-SELECTED_PIECE.offset.x
+        SELECTED_PIECE.y=e.y-SELECTED_PIECE.offset.y
+    }
+}
+
+const onMouseUp = (e) => {
+    if(SELECTED_PIECE!=null && SELECTED_PIECE.isClose()){
+        SELECTED_PIECE.snap()
+    }
+    SELECTED_PIECE=null
+    
+}
+
+const getPressedPiece = (loc) => {
+    for(let i=PIECES.length-1;i>=0;i--){
+        console.log(loc.x - 180,loc.y)
+        if(loc.x - 180 >PIECES[i].x && loc.x - 180<PIECES[i].x+PIECES[i].width &&
+            loc.y >PIECES[i].y && loc.y<PIECES[i].y+PIECES[i].height){
+                return PIECES[i]
+            }
+    }
+    return null
+}
+
+addEventListeners()
+
+
+
 const updateCanvas = () => {
     ctx.clearRect(0,0,CANVAS.width,CANVAS.height)
     
-    ctx.globalAlpha=0.05
+    ctx.globalAlpha=0.3
     ctx.drawImage(VIDEO,SIZE.x,SIZE.y,SIZE.width,SIZE.height)
     ctx.globalAlpha = 1 
 
@@ -58,6 +111,8 @@ class Pieces{
         this.height = SIZE.height/SIZE.row
         this.x=SIZE.x+this.width*this.columnIndex
         this.y=SIZE.y+this.height*this.rowIndex
+        this.xCorrect=this.x
+        this.yCorrect=this.y
     }
 
     draw(){
@@ -76,6 +131,19 @@ class Pieces{
 
         ctx.rect(this.x,this.y,this.width,this.height)
         ctx.stroke()
+    }
+
+    isClose(){
+        if(distance({x:this.x,y:this.y},
+            {x:this.xCorrect,y:this.yCorrect}) < this.width/3){
+                return true
+            }
+        return false
+    }
+
+    snap(){
+        this.x = this.xCorrect
+        this.y = this.yCorrect
     }
 }
 
@@ -103,6 +171,12 @@ const randomizePieces = () => {
         PIECES[i].x = loc.x
         PIECES[i].y = loc.y
     }
+}
+
+const distance = (p1,p2) => {
+    return Math.sqrt(
+        (p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y)
+    )
 }
 
 startBtn.addEventListener('click', randomizePieces)
