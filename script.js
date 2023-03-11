@@ -1,9 +1,10 @@
 let VIDEO = null
 const canvas = document.getElementById('vid-canvas')
 const startBtn = document.getElementById('start')
+const restartBtn = document.getElementById('restart')
 const ctx = canvas.getContext('2d')
-let SIZE = {x:180,y:60,width:640,height:480,row:5,column:5}
-const CANVAS = {width:1000,height:600}
+let SIZE = {x:180,y:75,width:423,height:317,row:5,column:5}
+const CANVAS = {width:800,height:500}
 let PIECES = []
 let SELECTED_PIECE = null
 
@@ -76,8 +77,8 @@ const onMouseUp = (e) => {
 const getPressedPiece = (loc) => {
     for(let i=PIECES.length-1;i>=0;i--){
         console.log(loc.x - 180,loc.y)
-        if(loc.x - 180 >PIECES[i].x && loc.x - 180<PIECES[i].x+PIECES[i].width &&
-            loc.y >PIECES[i].y && loc.y<PIECES[i].y+PIECES[i].height){
+        if(loc.x - 280 >PIECES[i].x && loc.x - 280<PIECES[i].x+PIECES[i].width &&
+            loc.y - 40 >PIECES[i].y && loc.y - 40 <PIECES[i].y+PIECES[i].height){
                 return PIECES[i]
             }
     }
@@ -91,7 +92,7 @@ addEventListeners()
 const updateCanvas = () => {
     ctx.clearRect(0,0,CANVAS.width,CANVAS.height)
     
-    ctx.globalAlpha=0.3
+    ctx.globalAlpha=0.1
     ctx.drawImage(VIDEO,SIZE.x,SIZE.y,SIZE.width,SIZE.height)
     ctx.globalAlpha = 1 
 
@@ -180,3 +181,4 @@ const distance = (p1,p2) => {
 }
 
 startBtn.addEventListener('click', randomizePieces)
+restartBtn.addEventListener('click', main)

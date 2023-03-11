@@ -29,3 +29,8 @@ button{
     border-radius: 20px;
     color: #935a5a;
 }
+#buttons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
